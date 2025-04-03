@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public enum TileDirection
@@ -10,10 +11,13 @@ public enum TileDirection
 
 public class TileManager : MonoBehaviour
 {
+    [SerializeField] TextMeshProUGUI modeText;
     [SerializeField] GameObject tilePrefab;
     Tile[,] tiles;
     int rowCount = 10;
     int colCount = 10;
+
+    internal static bool IsModeBFS = true;
 
     private void Start()
     {
@@ -47,5 +51,11 @@ public class TileManager : MonoBehaviour
                     currentTile.neighbors[(int)TileDirection.Left] = tiles[i, j - 1];
             }
         }
+    }
+
+    public void ToggleMode()
+    {
+        IsModeBFS = !IsModeBFS;
+        modeText.text = IsModeBFS ? "BFS" : "DFS";
     }
 }

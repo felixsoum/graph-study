@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,33 +8,48 @@ public class Tile : MonoBehaviour
     internal Tile[] neighbors = new Tile[4];
     internal bool[] isWalled = new bool[4];
 
-    static Queue<Tile> nextToVisit = new();
+    static List<Tile> nextToVisit = new();
     static HashSet<Tile> alreadyVisited = new();
 
     private void OnMouseDown()
     {
-        nextToVisit.Enqueue(this);
-
-        while (nextToVisit.Count > 0)
+        IEnumerator TraversalCoroutine()
         {
-            Tile tile = nextToVisit.Dequeue();
-            tile.Highlight();
-            alreadyVisited.Add(tile);
-            for (int i = 0; i < neighbors.Length; i++)
+            nextToVisit.Add(this);
+            alreadyVisited.Add(this);
+
+            while (nextToVisit.Count > 0)
             {
-                var neighbor = tile.neighbors[i];
-                if (neighbor == null)
-                    continue;
+                Tile tile = nextToVisit[0];
+                nextToVisit.RemoveAt(0);
 
-                if (tile.isWalled[i])
-                    continue;
+                tile.Highlight();
+                yield return new WaitForSeconds(0.1f);
+                for (int i = 0; i < neighbors.Length; i++)
+                {
+                    var neighbor = tile.neighbors[i];
+                    if (neighbor == null)
+                        continue;
 
-                if (alreadyVisited.Contains(neighbor))
-                    continue;
+                    if (tile.isWalled[i])
+                        continue;
 
-                nextToVisit.Enqueue(neighbor);
+                    if (alreadyVisited.Contains(neighbor))
+                        continue;
+
+                    alreadyVisited.Add(neighbor);
+                    if (TileManager.IsModeBFS)
+                    {
+                        nextToVisit.Add(neighbor);
+                    }
+                    else
+                    {
+                        nextToVisit.Insert(0, neighbor);
+                    }
+                }
             }
         }
+        StartCoroutine(TraversalCoroutine());
     }
 
     private void Highlight()

@@ -5,7 +5,6 @@ public class Wall : MonoBehaviour
     [SerializeField] Tile tile;
     [SerializeField] bool isTop;
     MeshRenderer meshRenderer;
-
     bool isWalling;
 
     private void Start()
