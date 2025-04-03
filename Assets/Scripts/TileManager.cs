@@ -25,6 +25,7 @@ public class TileManager : MonoBehaviour
             {
                 var pos = new Vector3(j, 0, i);
                 tiles[i, j] = Instantiate(tilePrefab, pos, Quaternion.identity).GetComponent<Tile>();
+                tiles[i, j].gameObject.name = $"Tile({i},{j})";
             }
         }
 

@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -7,14 +7,31 @@ public class Tile : MonoBehaviour
     internal Tile[] neighbors = new Tile[4];
     internal bool[] isWalled = new bool[4];
 
+    static Queue<Tile> nextToVisit = new();
+    static HashSet<Tile> alreadyVisited = new();
+
     private void OnMouseDown()
     {
-        Highlight();
-        for (int i = 0; i < neighbors.Length; i++)
+        nextToVisit.Enqueue(this);
+
+        while (nextToVisit.Count > 0)
         {
-            if (neighbors[i] != null && !isWalled[i])
+            Tile tile = nextToVisit.Dequeue();
+            tile.Highlight();
+            alreadyVisited.Add(tile);
+            for (int i = 0; i < neighbors.Length; i++)
             {
-                neighbors[i].Highlight();
+                var neighbor = tile.neighbors[i];
+                if (neighbor == null)
+                    continue;
+
+                if (tile.isWalled[i])
+                    continue;
+
+                if (alreadyVisited.Contains(neighbor))
+                    continue;
+
+                nextToVisit.Enqueue(neighbor);
             }
         }
     }
